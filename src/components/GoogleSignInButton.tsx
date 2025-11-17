@@ -4,7 +4,7 @@ import type { GoogleProfile } from '../types/google-auth';
 
 interface GoogleSignInButtonProps {
   clientId: string;
-  onSuccess?: (profile: GoogleProfile) => void;
+  onSuccess?: (profile: GoogleProfile, isNewUser?: boolean) => void;
   onError?: (error: string) => void;
   className?: string;
   theme?: 'outline' | 'filled_blue' | 'filled_black';
@@ -25,10 +25,10 @@ const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
   const [isGoogleButtonReady, setIsGoogleButtonReady] = useState(false);
   const hiddenButtonRef = useRef<HTMLDivElement>(null);
 
-  const handleSuccess = (profile: GoogleProfile) => {
+  const handleSuccess = (profile: GoogleProfile, isNewUser?: boolean) => {
     setIsLoading(false);
     setError(null);
-    onSuccess?.(profile);
+    onSuccess?.(profile, isNewUser);
   };
 
   const handleError = (errorMessage: string) => {

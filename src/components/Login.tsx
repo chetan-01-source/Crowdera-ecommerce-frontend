@@ -12,6 +12,8 @@ const Login = () => {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -52,7 +54,7 @@ const Login = () => {
         }
       }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -75,9 +77,17 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = (profile: GoogleProfile) => {
+  const handleGoogleSignIn = (profile: GoogleProfile, isNewUser?: boolean) => {
     console.log('Google Sign In successful:', profile);
-    // User is automatically registered through the GoogleSignInButton component
+    
+    if (isNewUser) {
+      // Show toast for new user registration
+      setToastMessage('User registered successfully! Welcome to Crowdera');
+      setShowToast(true);
+      // Hide toast after 3 seconds
+      setTimeout(() => setShowToast(false), 3000);
+    }
+    
     // Navigation will happen automatically via useEffect when isAuthenticated changes
   };
 
@@ -88,6 +98,18 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out">
+          <div className="flex items-center space-x-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">{toastMessage}</span>
+          </div>
+        </div>
+      )}
+      
       <div className="max-w-md w-full space-y-8">
         {/* Logo and Header */}
         <div className="text-center">
