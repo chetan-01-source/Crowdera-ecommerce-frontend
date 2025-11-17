@@ -40,47 +40,53 @@ export const useGoogleAuth = ({ clientId, onSuccess, onError }: UseGoogleAuthPro
           return;
         }
 
-     
-
         // Generate consistent password for Google users
-        const googlePassword = `G${profile.sub}g1`;
+        const googlePassword = `G${profile.sub}g123!`;
 
-        // First, try to login the user (in case they already exist)
+        // Try to login first
+        let loginSucceeded = false;
         try {
-          const loginResult = await dispatch(loginUser({
+          await dispatch(loginUser({
             email: profile.email,
             password: googlePassword
           })).unwrap();
-          console.log('Login successful for existing user:', loginResult);
-          
-         
+          // Login successful
+          loginSucceeded = true;
           onSuccess?.(profile);
-          return;
         } catch (loginError) {
-          console.error('Login failed, user might not exist. Attempting registration...', loginError);
-          
-          // If login fails, try to register the user
+          // Login failed, will try registration below
+          console.log('Login failed, attempting registration:', loginError);
+        }
+
+        // Only try registration if login did NOT succeed
+        if (!loginSucceeded) {
           try {
             const registerData = {
               email: profile.email,
               password: googlePassword,
               name: profile.name,
-              age: 25, // Default age since Google doesn't provide this
-              address: 'Not provided', // Default address
-              mobileNumber: "8999431754", // Default mobile number
-              role: 'user' // Default role
+              age: 25,
+              address: 'Not provided',
+              mobileNumber: "8999431754",
+              role: 'user'
             };
-
-            const registerResult = await dispatch(registerUser(registerData)).unwrap();
-            console.log('Registration successful:', registerResult);
-            onSuccess?.(profile);
+            await dispatch(registerUser(registerData)).unwrap();
+            // Registration successful, now login
+            try {
+              await dispatch(loginUser({
+                email: profile.email,
+                password: googlePassword
+              })).unwrap();
+              onSuccess?.(profile);
+            } catch (loginAfterRegisterError) {
+              onError?.(loginAfterRegisterError instanceof Error ? loginAfterRegisterError.message : 'Login after registration failed');
+            }
           } catch (registerError) {
-            console.error('Both login and registration failed:', registerError);
+            // Both login and registration failed
             onError?.(registerError instanceof Error ? registerError.message : 'Google authentication failed');
           }
         }
       } catch (error) {
-        console.error('Google authentication error:', error);
         onError?.(error instanceof Error ? error.message : 'Google authentication failed');
       }
     },

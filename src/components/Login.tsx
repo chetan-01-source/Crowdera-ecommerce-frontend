@@ -33,15 +33,26 @@ const Login = () => {
     }
 
     // Also check Redux state for authentication
-    if (isAuthenticated && user) {
-      // Redirect based on user role
-      if (user.role === 'admin') {
-        navigate('/dashboard');
-      } else {
-        navigate('/Home'); // Note: using capital H to match your route
+    if (isAuthenticated) {
+      // Get user role from localStorage if user object isn't available yet
+      const storedUserRole = localStorage.getItem('userRole');
+      if (user) {
+        // User object is available, use it for navigation
+        if (user.role === 'admin') {
+          navigate('/dashboard');
+        } else {
+          navigate('/Home');
+        }
+      } else if (storedUserRole) {
+        // User object not available yet, but we have stored role
+        if (storedUserRole === 'admin') {
+          navigate('/dashboard');
+        } else {
+          navigate('/Home');
+        }
       }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

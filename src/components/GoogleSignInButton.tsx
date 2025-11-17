@@ -60,7 +60,7 @@ const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
   const getButtonText = () => {
     switch (text) {
       case 'signin_with':
-        return 'Sign in with Google';
+        return 'Sign up with Google';
       case 'signup_with':
         return 'Sign up with Google';
       case 'continue_with':
@@ -68,7 +68,7 @@ const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       case 'signin':
         return 'Google';
       default:
-        return 'Sign in with Google';
+        return 'Sign up with Google';
     }
   };
 
