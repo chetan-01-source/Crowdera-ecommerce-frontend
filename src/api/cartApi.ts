@@ -75,7 +75,6 @@ const cartApiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 second timeout
 });
 
 // Add request interceptor for authentication if needed
